@@ -13,8 +13,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Handcrafted Haven",
-  description: "Marketplace for artisans to showcase and sell handcrafted products.",
+  title: { default: "Handcrafted Haven", template: "%s | Handcrafted Haven" },
+  description:
+    "Marketplace for artisans to showcase and sell handcrafted products.",
 };
 
 export default function RootLayout({
@@ -23,8 +24,16 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-50 text-gray-800`}
+        className={`${geistSans.variable} ${geistMono.variable} min-h-dvh bg-gray-50 text-gray-800 antialiased`}
       >
+        {/* Accessibility: skip link goes to #main defined in page.tsx */}
+        <a
+          href="#main"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 bg-violet-700 text-white px-4 py-2 rounded-xl shadow"
+        >
+          Skip to content
+        </a>
+
         {children}
       </body>
     </html>
