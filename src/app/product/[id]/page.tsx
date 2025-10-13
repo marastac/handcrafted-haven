@@ -2,48 +2,9 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import { getProductById } from "@/lib/products";
 
-// ---- Mock data (same ids/names used on the home page) ----
-type Product = {
-  id: number;
-  name: string;
-  price: number;
-  rating: number;
-  description: string;
-  artisan: string;
-};
-
-const PRODUCTS: Product[] = [
-  {
-    id: 1,
-    name: "Andean Ceramic Mug",
-    price: 45,
-    rating: 4.8,
-    description:
-      "Hand-thrown ceramic mug inspired by Andean motifs. Durable and perfect for daily use.",
-    artisan: "Ana Quispe",
-  },
-  {
-    id: 2,
-    name: "Silver Bracelet 950",
-    price: 120,
-    rating: 4.6,
-    description:
-      "Sterling silver (950) bracelet crafted using traditional filigree techniques.",
-    artisan: "Luis Paredes",
-  },
-  {
-    id: 3,
-    name: "Hand-embroidered Textile",
-    price: 80,
-    rating: 4.9,
-    description:
-      "Cotton textile hand-embroidered with geometric patterns and natural dyes.",
-    artisan: "María Huamán",
-  },
-];
-
-// Small helper to format currency
+// Currency formatter
 function formatUSD(value: number) {
   return new Intl.NumberFormat("en-US", {
     style: "currency",
@@ -52,14 +13,9 @@ function formatUSD(value: number) {
   }).format(value);
 }
 
-// Generate <title> dynamically
-export function generateMetadata({
-  params,
-}: {
-  params: { id: string };
-}): Metadata {
-  const idNum = Number(params.id);
-  const product = PRODUCTS.find((p) => p.id === idNum);
+// Dynamic <title>/<meta> per product
+export function generateMetadata({ params }: { params: { id: string } }): Metadata {
+  const product = getProductById(params.id);
   return {
     title: product ? `${product.name} – Handcrafted Haven` : "Product – Handcrafted Haven",
     description: product
@@ -69,8 +25,7 @@ export function generateMetadata({
 }
 
 export default function ProductDetailPage({ params }: { params: { id: string } }) {
-  const idNum = Number(params.id);
-  const product = PRODUCTS.find((p) => p.id === idNum);
+  const product = getProductById(params.id);
 
   if (!product) {
     notFound();
@@ -92,7 +47,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
         aria-labelledby="product-title"
         className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-white border rounded-2xl p-6 shadow-sm"
       >
-        {/* Image placeholder */}
+        {/* Image placeholder (use real image if available in /public/images) */}
         <div
           className="aspect-square bg-gray-100 rounded-xl"
           role="img"
@@ -105,13 +60,19 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
             {product!.name}
           </h1>
 
-          <p className="mt-2 text-gray-600">{product!.description}</p>
+          {product!.category ? (
+            <p className="mt-1 text-sm text-gray-500">Category: {product!.category}</p>
+          ) : null}
+
+          {product!.description ? (
+            <p className="mt-3 text-gray-600">{product!.description}</p>
+          ) : (
+            <p className="mt-3 text-gray-600">
+              No description provided for this item.
+            </p>
+          )}
 
           <dl className="mt-4 space-y-2">
-            <div className="flex items-center justify-between">
-              <dt className="text-gray-500">Artisan</dt>
-              <dd className="font-medium">{product!.artisan}</dd>
-            </div>
             <div className="flex items-center justify-between">
               <dt className="text-gray-500">Price</dt>
               <dd className="font-semibold text-violet-700">

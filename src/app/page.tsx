@@ -2,16 +2,42 @@
 
 import { useMemo, useState } from "react";
 import ProductCard from "@/components/ProductCard";
-import { products } from "@/lib/products"; // datos centralizados
+import { products, CATEGORIES } from "@/lib/products";
+
+type SortKey = "priceAsc" | "priceDesc" | "ratingDesc";
 
 export default function Home() {
   const [query, setQuery] = useState("");
+  const [category, setCategory] = useState<string>("All");
+  const [sortBy, setSortBy] = useState<SortKey>("priceAsc");
 
   const filtered = useMemo(() => {
+    // text search
     const q = query.trim().toLowerCase();
-    if (!q) return products;
-    return products.filter((p) => p.name.toLowerCase().includes(q));
-  }, [query, products]); // <- importante: incluir products
+    let list = products.filter((p) =>
+      q ? p.name.toLowerCase().includes(q) : true
+    );
+
+    // category filter
+    if (category !== "All") {
+      list = list.filter((p) => p.category === category);
+    }
+
+    // sorting
+    switch (sortBy) {
+      case "priceAsc":
+        list = [...list].sort((a, b) => a.price - b.price);
+        break;
+      case "priceDesc":
+        list = [...list].sort((a, b) => b.price - a.price);
+        break;
+      case "ratingDesc":
+        list = [...list].sort((a, b) => b.rating - a.rating);
+        break;
+    }
+
+    return list;
+  }, [query, category, sortBy]);
 
   return (
     <>
@@ -67,11 +93,50 @@ export default function Home() {
             New Arrivals
           </h2>
 
-          {/* Results count (announced for screen readers) */}
-          <p role="status" aria-live="polite" className="text-sm text-gray-600 mb-4">
-            {filtered.length} {filtered.length === 1 ? "result" : "results"}
-            {query ? ` for “${query}”` : null}
-          </p>
+          {/* Filters */}
+          <div className="flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between mb-4">
+            <div className="flex gap-3">
+              {/* Category filter */}
+              <label className="inline-flex items-center gap-2">
+                <span className="text-sm text-gray-700">Category</span>
+                <select
+                  className="border rounded-xl px-3 py-2 bg-white"
+                  value={category}
+                  onChange={(e) => setCategory(e.target.value)}
+                  aria-label="Filter by category"
+                >
+                  <option value="All">All</option>
+                  {CATEGORIES.map((c) => (
+                    <option key={c} value={c}>
+                      {c}
+                    </option>
+                  ))}
+                </select>
+              </label>
+
+              {/* Sort */}
+              <label className="inline-flex items-center gap-2">
+                <span className="text-sm text-gray-700">Sort</span>
+                <select
+                  className="border rounded-xl px-3 py-2 bg-white"
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value as SortKey)}
+                  aria-label="Sort products"
+                >
+                  <option value="priceAsc">Price (low → high)</option>
+                  <option value="priceDesc">Price (high → low)</option>
+                  <option value="ratingDesc">Rating (high → low)</option>
+                </select>
+              </label>
+            </div>
+
+            {/* Results count (announced for screen readers) */}
+            <p role="status" aria-live="polite" className="text-sm text-gray-600">
+              {filtered.length} {filtered.length === 1 ? "result" : "results"}
+              {query ? ` for “${query}”` : ""}{" "}
+              {category !== "All" ? `in ${category}` : ""}
+            </p>
+          </div>
 
           <ul
             role="list"
@@ -79,7 +144,12 @@ export default function Home() {
           >
             {filtered.map((p) => (
               <li key={p.id}>
-                <ProductCard id={p.id} name={p.name} price={p.price} rating={p.rating} />
+                <ProductCard
+                  id={p.id}
+                  name={p.name}
+                  price={p.price}
+                  rating={p.rating}
+                />
               </li>
             ))}
           </ul>
