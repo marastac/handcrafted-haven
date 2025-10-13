@@ -2,21 +2,16 @@
 
 import { useMemo, useState } from "react";
 import ProductCard from "@/components/ProductCard";
+import { products } from "@/lib/products"; // datos centralizados
 
 export default function Home() {
   const [query, setQuery] = useState("");
-
-  const products = [
-    { id: 1, name: "Andean Ceramic Mug", price: 45, rating: 4.8 },
-    { id: 2, name: "Silver Bracelet 950", price: 120, rating: 4.6 },
-    { id: 3, name: "Hand-embroidered Textile", price: 80, rating: 4.9 },
-  ];
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return products;
     return products.filter((p) => p.name.toLowerCase().includes(q));
-  }, [query, products]);
+  }, [query, products]); // <- importante: incluir products
 
   return (
     <>
@@ -84,12 +79,7 @@ export default function Home() {
           >
             {filtered.map((p) => (
               <li key={p.id}>
-                <ProductCard
-                  id={p.id}
-                  name={p.name}
-                  price={p.price}
-                  rating={p.rating}
-                />
+                <ProductCard id={p.id} name={p.name} price={p.price} rating={p.rating} />
               </li>
             ))}
           </ul>

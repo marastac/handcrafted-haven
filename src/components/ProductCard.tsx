@@ -12,10 +12,7 @@ export default function ProductCard({ id, name, price, rating }: ProductCardProp
   const titleId = `prod-${id}-title`;
 
   return (
-    <article
-      className="bg-white border rounded-2xl p-4 shadow-sm"
-      aria-labelledby={titleId}
-    >
+    <article className="bg-white border rounded-2xl p-4 shadow-sm" aria-labelledby={titleId}>
       {/* Image placeholder */}
       <div
         className="aspect-square bg-gray-100 rounded-xl mb-3"
@@ -34,7 +31,7 @@ export default function ProductCard({ id, name, price, rating }: ProductCardProp
 
       <Link
         href={`/product/${id}`}
-        className="mt-3 block w-full text-center bg-violet-600 text-white py-2 rounded-xl hover:bg-violet-700"
+        className="mt-3 block w-full bg-violet-600 text-center text-white py-2 rounded-xl hover:bg-violet-700"
         aria-label={`View details for ${name}`}
       >
         View details
