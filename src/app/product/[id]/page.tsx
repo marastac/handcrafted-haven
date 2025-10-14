@@ -1,10 +1,9 @@
-// src/app/product/[id]/page.tsx
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { getProductById } from "@/lib/products";
+import { products as PRODUCTS, type Product } from "@/lib/products";
 
-// Currency formatter
+// Format currency
 function formatUSD(value: number) {
   return new Intl.NumberFormat("en-US", {
     style: "currency",
@@ -13,9 +12,14 @@ function formatUSD(value: number) {
   }).format(value);
 }
 
-// Dynamic <title>/<meta> per product
-export function generateMetadata({ params }: { params: { id: string } }): Metadata {
-  const product = getProductById(params.id);
+// Next.js 15: params es un Promise
+export async function generateMetadata(
+  { params }: { params: Promise<{ id: string }> }
+): Promise<Metadata> {
+  const { id } = await params;
+  const idNum = Number(id);
+  const product = PRODUCTS.find((p) => p.id === idNum);
+
   return {
     title: product ? `${product.name} – Handcrafted Haven` : "Product – Handcrafted Haven",
     description: product
@@ -24,12 +28,19 @@ export function generateMetadata({ params }: { params: { id: string } }): Metada
   };
 }
 
-export default function ProductDetailPage({ params }: { params: { id: string } }) {
-  const product = getProductById(params.id);
+// Next.js 15: params es un Promise también en la página
+export default async function ProductDetailPage(
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params;
+  const idNum = Number(id);
 
-  if (!product) {
+  const found = PRODUCTS.find((p) => p.id === idNum);
+  if (!found) {
     notFound();
   }
+  // A partir de aquí tenemos un Product garantizado
+  const product = found as Product;
 
   return (
     <main id="main" className="max-w-4xl mx-auto p-6">
@@ -47,41 +58,33 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
         aria-labelledby="product-title"
         className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-white border rounded-2xl p-6 shadow-sm"
       >
-        {/* Image placeholder (use real image if available in /public/images) */}
+        {/* Image placeholder */}
         <div
           className="aspect-square bg-gray-100 rounded-xl"
           role="img"
-          aria-label={`${product!.name} image placeholder`}
+          aria-label={`${product.name} image placeholder`}
         />
 
         {/* Details */}
         <div>
           <h1 id="product-title" className="text-2xl font-semibold">
-            {product!.name}
+            {product.name}
           </h1>
 
-          {product!.category ? (
-            <p className="mt-1 text-sm text-gray-500">Category: {product!.category}</p>
-          ) : null}
-
-          {product!.description ? (
-            <p className="mt-3 text-gray-600">{product!.description}</p>
-          ) : (
-            <p className="mt-3 text-gray-600">
-              No description provided for this item.
-            </p>
+          {product.description && (
+            <p className="mt-2 text-gray-600">{product.description}</p>
           )}
 
           <dl className="mt-4 space-y-2">
             <div className="flex items-center justify-between">
               <dt className="text-gray-500">Price</dt>
               <dd className="font-semibold text-violet-700">
-                {formatUSD(product!.price)}
+                {formatUSD(product.price)}
               </dd>
             </div>
             <div className="flex items-center justify-between">
               <dt className="text-gray-500">Rating</dt>
-              <dd aria-label={`rating ${product!.rating}`}>★ {product!.rating}</dd>
+              <dd aria-label={`rating ${product.rating}`}>★ {product.rating}</dd>
             </div>
           </dl>
 
