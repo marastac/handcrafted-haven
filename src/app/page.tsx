@@ -1,6 +1,8 @@
+// src/app/page.tsx
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
 import ProductCard from "@/components/ProductCard";
 import { products, CATEGORIES } from "@/lib/products";
 
@@ -12,18 +14,16 @@ export default function Home() {
   const [sortBy, setSortBy] = useState<SortKey>("priceAsc");
 
   const filtered = useMemo(() => {
-    // text search
     const q = query.trim().toLowerCase();
+
     let list = products.filter((p) =>
       q ? p.name.toLowerCase().includes(q) : true
     );
 
-    // category filter
     if (category !== "All") {
       list = list.filter((p) => p.category === category);
     }
 
-    // sorting
     switch (sortBy) {
       case "priceAsc":
         list = [...list].sort((a, b) => a.price - b.price);
@@ -35,7 +35,6 @@ export default function Home() {
         list = [...list].sort((a, b) => b.rating - a.rating);
         break;
     }
-
     return list;
   }, [query, category, sortBy]);
 
@@ -48,9 +47,10 @@ export default function Home() {
           className="flex items-center justify-between bg-white border rounded-2xl p-4 shadow-sm"
           aria-label="Primary"
         >
-          <a href="/" className="font-semibold">
+          {/* IMPORTANT: Link instead of <a href="/"> to satisfy ESLint rule */}
+          <Link href="/" className="font-semibold">
             Handcrafted Haven
-          </a>
+          </Link>
 
           <label className="relative w-64" htmlFor="search">
             <span className="sr-only">Search products</span>
@@ -75,6 +75,7 @@ export default function Home() {
             categories, compare prices, and support local makers.
           </p>
           <div className="mt-4">
+            {/* Anchor to a section on the same page is OK */}
             <a
               href="#catalog"
               className="inline-block bg-violet-600 text-white px-5 py-2 rounded-xl hover:bg-violet-700"
@@ -144,12 +145,7 @@ export default function Home() {
           >
             {filtered.map((p) => (
               <li key={p.id}>
-                <ProductCard
-                  id={p.id}
-                  name={p.name}
-                  price={p.price}
-                  rating={p.rating}
-                />
+                <ProductCard id={p.id} name={p.name} price={p.price} rating={p.rating} />
               </li>
             ))}
           </ul>
