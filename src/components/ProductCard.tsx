@@ -8,30 +8,40 @@ export interface ProductCardProps {
   rating: number;
 }
 
+function formatUSD(value: number) {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    maximumFractionDigits: 0,
+  }).format(value);
+}
+
 export default function ProductCard({ id, name, price, rating }: ProductCardProps) {
   const titleId = `prod-${id}-title`;
 
   return (
-    <article className="bg-white border rounded-2xl p-4 shadow-sm" aria-labelledby={titleId}>
-      {/* Image placeholder */}
+    <article className="hh-card p-4 hover:shadow-md transition" aria-labelledby={titleId}>
+      {/* Image placeholder (replace with <Image /> later if you add real images) */}
       <div
-        className="aspect-square bg-gray-100 rounded-xl mb-3"
+        className="aspect-square bg-zinc-100 rounded-xl mb-3"
         role="img"
         aria-label={`${name} image placeholder`}
       />
 
-      <h3 id={titleId} className="font-medium">
+      <h3 id={titleId} className="font-medium text-zinc-900">
         {name}
       </h3>
 
       <div className="flex items-center justify-between mt-1">
-        <span className="text-violet-600 font-semibold">${price}</span>
-        <span aria-label={`rating ${rating}`}>★ {rating}</span>
+        <span className="text-violet-600 font-semibold">{formatUSD(price)}</span>
+        <span className="text-amber-500" aria-label={`rating ${rating}`}>
+          ★ {rating}
+        </span>
       </div>
 
       <Link
         href={`/product/${id}`}
-        className="mt-3 block w-full bg-violet-600 text-center text-white py-2 rounded-xl hover:bg-violet-700"
+        className="hh-btn hh-btn-primary w-full mt-3 text-center"
         aria-label={`View details for ${name}`}
       >
         View details

@@ -8,11 +8,11 @@
 
   /* Brand palette (Handcrafted Haven) */
   --brand: #8B5CF6;   /* violet (primary) */
-  --accent: #F59E0B;  /* amber  (accent) */
+  --accent: #F59E0B;  /* amber (accent) */
   --ink: #1F2937;     /* slate text */
   --muted: #F3F4F6;   /* light gray bg */
 
-  color-scheme: light dark;
+  color-scheme: light;
 }
 
 @theme inline {
@@ -28,11 +28,12 @@
   --font-mono: var(--font-geist-mono);
 }
 
-/* Dark mode surfaces/text via OS preference */
+/* Dark mode surfaces/text via OS preference (opt-in via OS) */
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
+    color-scheme: dark;
   }
 }
 
@@ -44,21 +45,22 @@ html, body {
 body {
   background: var(--background);
   color: var(--foreground);
-  /* Use Geist (from layout.tsx) with sensible fallbacks */
-  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Helvetica Neue", Noto Sans, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system,
+    Segoe UI, Roboto, Arial, "Helvetica Neue", Noto Sans, "Apple Color Emoji",
+    "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Make media behave nicely by default */
+/* Media defaults */
 img, svg, video, canvas {
   display: block;
   max-width: 100%;
   height: auto;
 }
 
-/* Links: subtle underline on hover for clarity */
+/* Links */
 a {
   text-decoration: none;
   color: inherit;
@@ -68,20 +70,20 @@ a:hover {
   text-underline-offset: 3px;
 }
 
-/* Keyboard focus: visible and accessible across components */
+/* Keyboard focus */
 :focus-visible {
   outline: 2px solid var(--brand);
   outline-offset: 2px;
-  border-radius: 10px; /* looks good with rounded UI */
+  border-radius: 10px;
 }
 
-/* Text selection using brand color */
+/* Text selection */
 ::selection {
   background: var(--brand);
   color: white;
 }
 
-/* Reduce motion for users who prefer it */
+/* Reduce motion */
 @media (prefers-reduced-motion: reduce) {
   * {
     animation-duration: 0.001ms !important;
@@ -89,4 +91,75 @@ a:hover {
     transition-duration: 0.001ms !important;
     scroll-behavior: auto !important;
   }
+}
+
+/* ---- Small design helpers (no @apply; pure CSS) ---- */
+
+/* Cards used around the site */
+.hh-card {
+  background: #fff;
+  border: 1px solid rgba(2,6,23,0.06);
+  border-radius: 16px;
+  box-shadow:
+    0 1px 1px rgba(2,6,23,0.03),
+    0 2px 6px rgba(2,6,23,0.04);
+}
+
+/* Primary button */
+.hh-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  padding: .625rem 1rem; /* 10px 16px */
+  border-radius: 12px;
+  border: 1px solid transparent;
+  font-weight: 600;
+  cursor: pointer;
+  transition: box-shadow .2s ease, transform .02s ease, background-color .2s ease, border-color .2s ease;
+}
+.hh-btn:active { transform: translateY(1px); }
+
+.hh-btn-primary {
+  background: var(--brand);
+  color: #fff;
+  box-shadow: 0 6px 16px rgba(139, 92, 246, 0.35);
+}
+.hh-btn-primary:hover { background: #7C3AED; }
+.hh-btn-primary:focus-visible { box-shadow: 0 0 0 3px rgba(139,92,246,.35); }
+
+.hh-btn-ghost {
+  background: #fff;
+  border-color: rgba(2,6,23,0.1);
+}
+.hh-btn-ghost:hover { background: var(--muted); }
+
+/* Inputs */
+.hh-input {
+  width: 100%;
+  padding: .5rem .75rem; /* 8px 12px */
+  border-radius: 12px;
+  border: 1px solid rgba(2,6,23,0.1);
+  background: #fff;
+  color: var(--ink);
+  outline: none;
+  transition: border-color .2s ease, box-shadow .2s ease, background-color .2s ease;
+}
+.hh-input::placeholder { color: #9ca3af; }
+.hh-input:focus {
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px rgba(139,92,246,.2);
+}
+
+/* Badges / small pills */
+.hh-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: .375rem;
+  padding: .25rem .5rem; /* 4px 8px */
+  border-radius: 9999px;
+  font-size: .75rem;
+  line-height: 1rem;
+  background: var(--muted);
+  color: var(--ink);
 }
